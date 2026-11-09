@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { jsPDF } from 'jspdf'
-import htmlToImage from 'html-to-image'
+import { toPng } from 'html-to-image'
 
 interface ExportPdfButtonProps {
   resultados: any
@@ -19,7 +19,7 @@ export default function ExportPdfButton({ resultados, nivel, niveis }: ExportPdf
     const node = ref.current
 
     try {
-      const dataUrl = await htmlToImage.toPng(node, {
+      const dataUrl = await toPng(node, {
         backgroundColor: '#ffffff',
         width: node.offsetWidth,
         height: node.offsetHeight,
