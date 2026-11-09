@@ -104,7 +104,7 @@ export default function Home() {
         throw new Error(err.erro || 'Erro ao refazer tarefa')
       }
       const data = await res.json()
-      setResultados(prev => ({
+      setResultados((prev: any) => ({
         ...prev,
         [tarefa]: data[tarefa] || data.resultado || '',
       }))

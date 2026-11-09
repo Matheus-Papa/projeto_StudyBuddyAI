@@ -34,8 +34,8 @@ export default function TaskSelector({
   contextoEstudado,
 }: TaskSelectorProps) {
   const toggleTarefa = (value: string) => {
-    setSelecionadas(prev =>
-      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+    setSelecionadas((prev: string[]) =>
+      prev.includes(value) ? prev.filter((v: string) => v !== value) : [...prev, value]
     )
   }
 
