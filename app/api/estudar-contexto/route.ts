@@ -1,23 +1,27 @@
 import { NextResponse } from 'next/server'
-import { handleOllamaStream } from '@/lib/ollama-server'
+import { callNvidia } from '@/lib/nvidia-server'
 
 export const maxDuration = 300
-
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'phi3'
 
 export async function POST(req: Request) {
   try {
     const { texto } = await req.json()
 
     if (!texto || typeof texto !== 'string' || texto.trim().length < 10) {
-      return new Response(
-        JSON.stringify({ erro: 'Texto muito curto. Cole um conteúdo com pelo menos 10 caracteres.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      return NextResponse.json(
+        { erro: 'Texto muito curto. Cole um conteúdo com pelo menos 10 caracteres.' },
+        { status: 400 }
       )
     }
 
-    const prompt = `
+    const messages = [
+      {
+        role: 'system',
+        content: 'Você é um assistente educacional especializado em português do Brasil. Responda de forma direta e objetiva.',
+      },
+      {
+        role: 'user',
+        content: `
 Leia o texto abaixo e analise o contexto. Não gere resumo, quiz nem flashcards. Apenas identifique:
 
 1. Tema principal do texto
@@ -29,13 +33,18 @@ TEXTO:
 ${texto}
 
 Responda em português do Brasil, de forma direta e objetiva.
-`
+        `,
+      },
+    ]
 
-    return handleOllamaStream(req, {
-      prompt,
-      onResult: (fullText) => ({
-        contexto: fullText || 'Não foi possível extrair o contexto.',
-      }),
+    const contexto = await callNvidia(messages, {
+      temperature: 0.5,
+      top_p: 0.95,
+      max_tokens: 2048,
+    })
+
+    return NextResponse.json({
+      contexto: contexto || 'Não foi possível extrair o contexto.',
     })
   } catch (err: any) {
     return NextResponse.json(
