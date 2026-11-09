@@ -170,7 +170,7 @@ export default function Home() {
             <h2 style={{ color: '#0f172a', fontSize: '1.25rem', margin: 0 }}>Materiais gerados</h2>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <ExportPdfButton
-                ref={resultadosRef}
+                containerRef={resultadosRef}
                 nivel={nivel}
                 niveis={niveis}
               />

@@ -5,16 +5,16 @@ import { jsPDF } from 'jspdf'
 import { toPng } from 'html-to-image'
 
 interface ExportPdfButtonProps {
-  ref: React.RefObject<HTMLDivElement>
+  containerRef: React.RefObject<HTMLDivElement>
   nivel: string
   niveis: any[]
 }
 
-export default function ExportPdfButton({ ref, nivel, niveis }: ExportPdfButtonProps) {
+export default function ExportPdfButton({ containerRef, nivel, niveis }: ExportPdfButtonProps) {
   const exportarPDF = async () => {
-    if (!ref.current) return
+    if (!containerRef.current) return
 
-    const node = ref.current
+    const node = containerRef.current
 
     try {
       const dataUrl = await toPng(node, {
