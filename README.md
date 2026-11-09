@@ -65,6 +65,7 @@ Abra `http://localhost:3000` no navegador.
 
 - Funciona apenas no seu computador enquanto o Ollama estiver aberto.
 - Como não há banco de dados, o contexto é perdido se você recarregar a página.
+- O Ollama pode demorar alguns minutos para responder em textos longos (depende do seu processador). As rotas da API estão configuradas com `maxDuration = 300` para suportar requisições longas.
 - Se você quiser publicar na internet (ex: Vercel) no futuro, será necessário trocar a IA por uma API de nuvem (Gemini, Groq, etc.), porque o Ollama não roda em ambiente serverless.
 
 ## Estrutura do projeto
