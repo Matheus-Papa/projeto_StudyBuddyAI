@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { callNvidia } from '@/lib/nvidia-server'
+import { callNvidia, type NvidiaMessage } from '@/app/lib/nvidia-server'
 
 export const maxDuration = 300
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const messages = [
+    const messages: NvidiaMessage[] = [
       {
         role: 'system',
         content: 'Você é um assistente educacional especializado em português do Brasil. Responda de forma direta e objetiva.',
