@@ -23,7 +23,7 @@ Na versão atual, o fluxo é dividido: primeiro a IA "estuda" o texto e extrai o
 
 ## Provedor de IA
 
-O projeto usa a **NVIDIA DeepSeek (deepseek-v4.1-flash)** via API na nuvem (`https://integrate.api.nvidia.com/v1`).
+O projeto usa a **NVIDIA Meta Llama (meta/muse-glimmer-30b)** via API na nuvem (`https://integrate.api.nvidia.com/v1`).
 
 Tudo roda **via API da NVIDIA**. Não é enviado para o Ollama local e nada é salvo em banco de dados.
 
@@ -72,7 +72,7 @@ app/
   page.tsx              # Página principal com controle de fluxo (estudar -> selecionar -> exibir)
   globals.css           # Estilos globais
   layout.tsx            # Layout raiz
-  lib/nvidia-server.ts  # Cliente da API da NVIDIA (DeepSeek)
+  lib/nvidia-server.ts  # Cliente da API da NVIDIA (Meta Llama)
   api/estudar-contexto/route.ts   # Rota: analisa o texto e extrai contexto
   api/gerar-tarefas/route.ts      # Rota: gera múltiplas tarefas de uma vez
   api/gerar-tarefa-unica/route.ts # Rota: refaz uma única tarefa
