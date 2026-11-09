@@ -1,5 +1,5 @@
 export const NVIDIA_BASE_URL = process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1'
-export const NVIDIA_MODEL = process.env.NVIDIA_MODEL || 'deepseek-ai/deepseek-v4.1-flash'
+export const NVIDIA_MODEL = process.env.NVIDIA_MODEL || 'meta/muse-glimmer-30b'
 
 export interface NvidiaMessage {
   role: 'system' | 'user' | 'assistant'
