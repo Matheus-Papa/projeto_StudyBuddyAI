@@ -75,7 +75,7 @@ export default function TaskSelector({
                 gap: '0.5rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontWeight: 500,
-                color: '#334155',
+                color: 'var(--text-secondary)',
               }}
             >
               <input
@@ -83,9 +83,9 @@ export default function TaskSelector({
                 checked={selecionadas.includes(t.value)}
                 onChange={() => toggleTarefa(t.value)}
                 disabled={loading}
-                style={{ width: '18px', height: '18px', accentColor: '#2563eb' }}
+                style={{ width: '18px', height: '18px', accentColor: 'var(--accent)' }}
               />
-              {t.label}
+              <span style={{ color: 'var(--text)', fontWeight: 500 }}>{t.label}</span>
             </label>
           ))}
         </div>
@@ -104,10 +104,10 @@ export default function TaskSelector({
               disabled={loading}
               style={{
                 padding: '0.75rem 1rem',
-                border: `2px solid ${nivel === n.value ? '#2563eb' : '#e2e8f0'}`,
+                border: `2px solid ${nivel === n.value ? 'var(--accent)' : 'var(--border)'}`,
                 borderRadius: '10px',
-                background: nivel === n.value ? '#2563eb' : '#ffffff',
-                color: nivel === n.value ? '#ffffff' : '#334155',
+                background: nivel === n.value ? 'var(--accent)' : 'var(--card-bg)',
+                color: nivel === n.value ? '#ffffff' : 'var(--text)',
                 fontWeight: 600,
                 fontSize: '0.9375rem',
                 cursor: loading ? 'not-allowed' : 'pointer',

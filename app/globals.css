@@ -361,6 +361,7 @@ button:disabled {
 .progress-container {
   margin: 1.5rem 0;
   animation: slideDown 0.4s ease-out;
+  background: transparent;
 }
 
 .progress-header {
@@ -370,7 +371,11 @@ button:disabled {
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text);
+}
+
+.progress-title {
+  color: var(--text);
 }
 
 .progress-pct {

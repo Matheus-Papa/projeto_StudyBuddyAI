@@ -140,17 +140,18 @@ export default function Home() {
         Estude o texto primeiro, depois escolha o que gerar. Tudo local com Ollama.
       </p>
 
-      <ProgressBar progress={progresso} status={status} />
-
       {modo === 'estudar' && (
-        <StudyForm
-          texto={texto}
-          setTexto={setTexto}
-          loading={loading}
-          onSubmit={estudarContexto}
-          error={error}
-          botaoTexto={loading ? 'Estudando...' : 'Estudar contexto'}
-        />
+        <>
+          <StudyForm
+            texto={texto}
+            setTexto={setTexto}
+            loading={loading}
+            onSubmit={estudarContexto}
+            error={error}
+            botaoTexto={loading ? 'Estudando...' : 'Estudar contexto'}
+          />
+          <ProgressBar progress={progresso} status={status} />
+        </>
       )}
 
       {modo === 'selecionar' && (
@@ -176,11 +177,13 @@ export default function Home() {
             error={error}
             contextoEstudado={!!contexto}
           />
+          <ProgressBar progress={progresso} status={status} />
         </>
       )}
 
       {modo === 'exibir' && (
         <>
+          <ProgressBar progress={progresso} status={status} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 style={{ color: '#0f172a', fontSize: '1.25rem', margin: 0 }}>Materiais gerados</h2>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
