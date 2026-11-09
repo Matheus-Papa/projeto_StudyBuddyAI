@@ -1,5 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+:root {
+  --bg: #f0f4f8;
+  --bg-secondary: #e9eef5;
+  --card-bg: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --muted: #94a3b8;
+  --shadow: rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  --bg: #0f172a;
+  --bg-secondary: #1e293b;
+  --card-bg: #1e293b;
+  --text: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border: #334155;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --muted: #64748b;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,14 +34,20 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(135deg, #f0f4f8 0%, #e9eef5 100%);
-  color: #1e293b;
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -33,41 +65,45 @@ body {
 header {
   text-align: center;
   margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 h1 {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text);
   margin-bottom: 0.75rem;
   letter-spacing: -0.5px;
 }
 
 .subtitle {
   font-size: 1.125rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
 .card {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 40px -10px var(--shadow);
+  border: 1px solid var(--border);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 50px -10px var(--shadow);
 }
 
 .card h2 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--accent);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -78,20 +114,21 @@ textarea {
   width: 100%;
   min-height: 220px;
   padding: 1rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border);
   border-radius: 12px;
   font-family: inherit;
   font-size: 1rem;
   resize: vertical;
+  background: var(--bg-secondary);
+  color: var(--text);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  background: #fafbfc;
 }
 
 textarea:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  background: #ffffff;
+  background: var(--card-bg);
 }
 
 label {
@@ -99,28 +136,29 @@ label {
   margin-bottom: 0.5rem;
   font-weight: 600;
   font-size: 0.9375rem;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 select {
   width: 100%;
   max-width: 320px;
   padding: 0.875rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border);
   border-radius: 12px;
   font-size: 1rem;
-  background: #fafbfc;
+  background: var(--bg-secondary);
+  color: var(--text);
   cursor: pointer;
   transition: border-color 0.2s ease;
 }
 
 select:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--accent);
 }
 
 button {
-  background: #2563eb;
+  background: var(--accent);
   color: #ffffff;
   border: none;
   padding: 1rem 2rem;
@@ -133,7 +171,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: var(--accent-hover);
 }
 
 button:active:not(:disabled) {
@@ -141,12 +179,49 @@ button:active:not(:disabled) {
 }
 
 button:disabled {
-  background: #94a3b8;
+  background: var(--muted);
   cursor: not-allowed;
 }
 
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: auto;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-secondary);
+}
+
 .loading {
-  color: #64748b;
+  color: var(--text-secondary);
   font-style: italic;
   text-align: center;
   padding: 2rem;
@@ -178,14 +253,14 @@ button:disabled {
   display: inline-block;
   width: 4px;
   height: 20px;
-  background: #2563eb;
+  background: var(--accent);
   border-radius: 2px;
 }
 
 .conteudo {
   white-space: pre-wrap;
   line-height: 1.75;
-  color: #334155;
+  color: var(--text);
   font-size: 1rem;
 }
 
@@ -195,10 +270,10 @@ button:disabled {
   text-align: left;
   padding: 0.75rem 1rem;
   margin: 0.375rem 0;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border);
   border-radius: 10px;
-  background: #ffffff;
-  color: #334155;
+  background: var(--card-bg);
+  color: var(--text);
   font-size: 0.9375rem;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -206,37 +281,42 @@ button:disabled {
 }
 
 .quiz-option:hover {
-  border-color: #2563eb;
+  border-color: var(--accent);
   background: #eff6ff;
-  color: #1e40af;
+  color: var(--accent-hover);
+}
+
+.dark .quiz-option:hover {
+  background: #1e293b;
+  color: var(--accent-hover);
 }
 
 .flashcard {
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border);
   border-radius: 14px;
   padding: 1.5rem;
   margin-bottom: 1.25rem;
-  background: #ffffff;
+  background: var(--card-bg);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .flashcard:hover {
-  border-color: #2563eb;
+  border-color: var(--accent);
   transform: translateY(-1px);
-  box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 10px 30px -10px var(--shadow);
 }
 
 .flashcard .pergunta {
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text);
   margin-bottom: 0.75rem;
   font-size: 1rem;
 }
 
 .flashcard .answer {
   margin-top: 0.5rem;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 0.9375rem;
   line-height: 1.6;
 }
@@ -244,7 +324,7 @@ button:disabled {
 .flashcard-footer {
   margin-top: 0.75rem;
   font-size: 0.8125rem;
-  color: #94a3b8;
+  color: var(--muted);
   font-style: italic;
 }
 
@@ -263,5 +343,23 @@ button:disabled {
 
   textarea {
     min-height: 180px;
+  }
+}
+
+.theme-header {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+}
+
+.container {
+  padding-top: 4rem;
+}
+
+/* Ocultar elementos na impressão/PDF */
+@media print {
+  .no-print {
+    display: none !important;
   }
 }

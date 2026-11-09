@@ -1,4 +1,5 @@
 import './globals.css'
+import DarkModeToggle from '@/components/DarkModeToggle'
 
 export const metadata = {
   title: 'Study Buddy AI',
@@ -12,7 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <div className="theme-header">
+          <DarkModeToggle />
+        </div>
+        {children}
+      </body>
     </html>
   )
 }

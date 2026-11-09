@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import StudyForm from '@/components/StudyForm'
 import TaskSelector from '@/components/TaskSelector'
 import ResultCard from '@/components/ResultCard'
 import Quiz from '@/components/Quiz'
 import Flashcards from '@/components/Flashcards'
+import ExportPdfButton from '@/components/ExportPdfButton'
 
 type Modo = 'estudar' | 'selecionar' | 'exibir'
 
@@ -18,6 +19,7 @@ export default function Home() {
   const [resultados, setResultados] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const resultadosRef = useRef<HTMLDivElement>(null)
 
   const niveis = [
     { value: 'ensino_fundamental_i', label: 'Ensino Fundamental I' },
@@ -165,45 +167,54 @@ export default function Home() {
         <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 style={{ color: '#0f172a', fontSize: '1.25rem', margin: 0 }}>Materiais gerados</h2>
-            <button onClick={voltarParaSelecao} style={{ background: '#64748b', padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-              Escolher mais tarefas
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <ExportPdfButton
+                resultados={resultados}
+                nivel={nivel}
+                niveis={niveis}
+              />
+              <button onClick={voltarParaSelecao} className="btn-ghost no-print">
+                Escolher mais tarefas
+              </button>
+            </div>
           </div>
 
-          {resultados.resumo && (
-            <ResultCard
-              titulo="Resumo"
-              conteudo={resultados.resumo}
-              tarefa="resumo"
-              onRefazer={refazerTarefa}
-              loading={loading}
-            />
-          )}
-          {resultados.explicacao && (
-            <ResultCard
-              titulo={`Explicação (${niveis.find(n => n.value === nivel)?.label})`}
-              conteudo={resultados.explicacao}
-              tarefa="explicacao"
-              onRefazer={refazerTarefa}
-              loading={loading}
-            />
-          )}
-          {resultados.quiz && resultados.quiz.length > 0 && (
-            <Quiz
-              questoes={resultados.quiz}
-              tarefa="quiz"
-              onRefazer={refazerTarefa}
-              loading={loading}
-            />
-          )}
-          {resultados.flashcards && resultados.flashcards.length > 0 && (
-            <Flashcards
-              cards={resultados.flashcards}
-              tarefa="flashcards"
-              onRefazer={refazerTarefa}
-              loading={loading}
-            />
-          )}
+          <div ref={resultadosRef} className="result-grid no-print">
+            {resultados.resumo && (
+              <ResultCard
+                titulo="Resumo"
+                conteudo={resultados.resumo}
+                tarefa="resumo"
+                onRefazer={refazerTarefa}
+                loading={loading}
+              />
+            )}
+            {resultados.explicacao && (
+              <ResultCard
+                titulo={`Explicação (${niveis.find(n => n.value === nivel)?.label})`}
+                conteudo={resultados.explicacao}
+                tarefa="explicacao"
+                onRefazer={refazerTarefa}
+                loading={loading}
+              />
+            )}
+            {resultados.quiz && resultados.quiz.length > 0 && (
+              <Quiz
+                questoes={resultados.quiz}
+                tarefa="quiz"
+                onRefazer={refazerTarefa}
+                loading={loading}
+              />
+            )}
+            {resultados.flashcards && resultados.flashcards.length > 0 && (
+              <Flashcards
+                cards={resultados.flashcards}
+                tarefa="flashcards"
+                onRefazer={refazerTarefa}
+                loading={loading}
+              />
+            )}
+          </div>
 
           {error && <div className="error">{error}</div>}
         </>
