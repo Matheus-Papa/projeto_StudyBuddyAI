@@ -18,6 +18,7 @@ interface TaskSelectorProps {
   loading: boolean
   onGerar: () => void
   error: string | null
+  contextoEstudado?: boolean
 }
 
 export default function TaskSelector({
@@ -30,6 +31,7 @@ export default function TaskSelector({
   loading,
   onGerar,
   error,
+  contextoEstudado,
 }: TaskSelectorProps) {
   const toggleTarefa = (value: string) => {
     setSelecionadas(prev =>
@@ -40,6 +42,24 @@ export default function TaskSelector({
   return (
     <form className="card" onSubmit={(e) => { e.preventDefault(); onGerar() }}>
       {error && <div className="error">{error}</div>}
+
+      {contextoEstudado && (
+        <div style={{
+          background: '#eff6ff',
+          border: '1px solid #bfdbfe',
+          borderRadius: '8px',
+          padding: '0.75rem 1rem',
+          marginBottom: '1rem',
+          fontSize: '0.9rem',
+          color: '#1e40af',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+        }}>
+          <span>📚</span>
+          <span>Contexto já estudado — materiais serão gerados usando o texto anterior.</span>
+        </div>
+      )}
 
       <div style={{ marginBottom: '1.5rem' }}>
         <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 600 }}>
