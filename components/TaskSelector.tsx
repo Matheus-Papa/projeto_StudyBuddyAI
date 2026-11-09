@@ -63,7 +63,7 @@ export default function TaskSelector({
                 checked={selecionadas.includes(t.value)}
                 onChange={() => toggleTarefa(t.value)}
                 disabled={loading}
-                style({ width: '18px', height: '18px', accentColor: '#2563eb' } as React.CSSProperties)
+                style={{ width: '18px', height: '18px', accentColor: '#2563eb' }}
               />
               {t.label}
             </label>
