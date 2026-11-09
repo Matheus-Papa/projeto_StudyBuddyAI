@@ -1,8 +1,9 @@
-A fotossíntese é o processo pelo qual plantas, algas e algumas bactérias
-convertem a luz solar em energia química. Durante esse processo, o gás
-carbônico da atmosfera é absorvido pelas folhas e, junto com a água
-absorvida pelas raízes, é transformado em glicose e oxigênio. A clorofila,
-pigmento verde presente nos cloroplastos, é responsável por capturar a
-energia luminosa. Esse mecanismo é fundamental para a vida na Terra, pois
-é a base de quase todas as cadeias alimentares e mantém o equilíbrio do
-oxigênio na atmosfera.
+A Inteligência Artificial (IA) é uma área da ciência da computação que desenvolve sistemas capazes de realizar tarefas que normalmente exigem inteligência humana, como aprendizado, raciocínio, percepção e tomada de decisão.
+
+Existem dois tipos principais: a IA fraca, que é especializada em uma única tarefa (como assistentes de voz e sistemas de recomendação), e a IA forte, que teria capacidade cognitiva geral semelhante à humana (ainda em desenvolvimento).
+
+O machine learning, ou aprendizado de máquina, é um subcampo da IA onde algoritmos aprendem padrões a partir de dados, sem serem explicitamente programados para cada situação. Já o deep learning usa redes neurais artificiais com muitas camadas para processar informações complexas, como imagens e linguagem natural.
+
+As aplicações da IA abrangem medicina (diagnóstico de doenças), transporte (veículos autônomos), educação (tutores personalizados) e entretenimento (recomendação de filmes e músicas). No entanto, seu avanço levanta desafios éticos, como privacidade de dados, vieses algorítmicos e impacto no mercado de trabalho.
+
+Para que a IA seja desenvolvida de forma responsável, é necessário transparência nos algoritmos, proteção de dados pessoais e participação de profissionais de diversas áreas na criação dessas tecnologias.

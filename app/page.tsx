@@ -25,6 +25,40 @@ export default function Home() {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
   const resultadosRef = useRef<HTMLDivElement>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+// Duração da animação simulada, proporcional ao tamanho do texto.
+  const duracaoPara = (texto: string) => {
+    const len = texto.length
+    return Math.min(12000, Math.max(3000, 2000 + len * 10))
+  }
+
+// Anima o progresso de 0 até ~92 durante a duração informada (ms).
+  const animarProgresso = (duracao: number, onFim: () => void) => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    setProgresso(0)
+    const passos = 46 // 0 a 92, de 2 em 2
+    const intervalo = duracao / passos
+    let atual = 0
+    timerRef.current = setInterval(() => {
+      atual += 2
+      if (atual >= 92) {
+        clearInterval(timerRef.current!)
+        timerRef.current = null
+        onFim()
+      } else {
+        setProgresso(atual)
+      }
+    }, intervalo)
+  }
+
+  const pararAnimacao = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    setProgresso(0)
+  }
 
   const niveis = [
     { value: 'ensino_fundamental_i', label: 'Ensino Fundamental I' },
@@ -47,20 +81,25 @@ export default function Home() {
       return
     }
     setStatus('estudando')
-    setProgresso(30)
     setLoading(true)
     setError(null)
+    pararAnimacao()
+    const duracao = duracaoPara(texto)
+    animarProgresso(duracao, () => {
+      // A animação chegou ao fim (~92%) mas a requisição pode ainda estar rodando.
+      // O progresso fica travado em ~92% até a resposta voltar.
+    })
     try {
       const payload = await postJson('/api/estudar-contexto', { texto })
-      setProgresso(100)
+      pararAnimacao()
       if (payload?.contexto) {
         setContexto(payload.contexto)
         setModo('selecionar')
       }
     } catch (err: any) {
+      pararAnimacao()
       if (!error) setError(err.message || 'Erro inesperado ao estudar o contexto.')
     } finally {
-      setProgresso(0)
       setLoading(false)
       setStatus('idle')
     }
@@ -72,22 +111,26 @@ export default function Home() {
       return
     }
     setStatus('gerando')
-    setProgresso(30)
     setLoading(true)
     setError(null)
+    pararAnimacao()
+    const duracao = duracaoPara(contexto)
+    animarProgresso(duracao, () => {
+      // Idem: animação pode terminar antes da requisição.
+    })
     try {
       const payload = await postJson('/api/gerar-tarefas', {
         contexto,
         nivel,
         tarefas: tarefasSelecionadas,
       })
-      setProgresso(100)
+      pararAnimacao()
       setResultados(payload || null)
       setModo('exibir')
     } catch (err: any) {
+      pararAnimacao()
       if (!error) setError(err.message || 'Erro inesperado ao gerar as tarefas.')
     } finally {
-      setProgresso(0)
       setLoading(false)
       setStatus('idle')
     }
@@ -95,24 +138,28 @@ export default function Home() {
 
   const refazerTarefa = async (tarefa: string) => {
     setStatus('gerando')
-    setProgresso(30)
     setLoading(true)
     setError(null)
+    pararAnimacao()
+    const duracao = duracaoPara(contexto)
+    animarProgresso(duracao, () => {
+      // Idem.
+    })
     try {
       const payload = await postJson('/api/gerar-tarefa-unica', {
         contexto,
         nivel,
         tarefa,
       })
-      setProgresso(100)
+      pararAnimacao()
       setResultados((prev: any) => ({
         ...prev,
         [tarefa]: payload?.[tarefa] || '',
       }))
     } catch (err: any) {
+      pararAnimacao()
       if (!error) setError(err.message || 'Erro ao refazer.')
     } finally {
-      setProgresso(0)
       setLoading(false)
       setStatus('idle')
     }
