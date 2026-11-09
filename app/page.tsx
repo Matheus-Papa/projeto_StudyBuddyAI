@@ -8,7 +8,7 @@ import Quiz from '@/components/Quiz'
 import Flashcards from '@/components/Flashcards'
 import ExportPdfButton from '@/components/ExportPdfButton'
 import ProgressBar from '@/components/ProgressBar'
-import { postOllamaStream } from '@/lib/ollama-client'
+import { postJson } from '@/lib/api-client'
 
 type Modo = 'estudar' | 'selecionar' | 'exibir'
 type Status = 'idle' | 'estudando' | 'gerando'
@@ -47,24 +47,18 @@ export default function Home() {
       return
     }
     setStatus('estudando')
-    setProgresso(0)
+    setProgresso(30)
     setLoading(true)
     setError(null)
     try {
-      const payload = await postOllamaStream(
-        '/api/estudar-contexto',
-        { texto },
-        (ev) => {
-          if (ev.type === 'progress') setProgresso(ev.progress)
-          else if (ev.type === 'error') setError(ev.erro)
-        }
-      )
+      const payload = await postJson('/api/estudar-contexto', { texto })
+      setProgresso(100)
       if (payload?.contexto) {
         setContexto(payload.contexto)
         setModo('selecionar')
       }
     } catch (err: any) {
-      if (!error) setError(err.message || 'Erro inesperado. Verifique se o Ollama está rodando.')
+      if (!error) setError(err.message || 'Erro inesperado ao estudar o contexto.')
     } finally {
       setProgresso(0)
       setLoading(false)
@@ -78,22 +72,20 @@ export default function Home() {
       return
     }
     setStatus('gerando')
-    setProgresso(0)
+    setProgresso(30)
     setLoading(true)
     setError(null)
     try {
-      const payload = await postOllamaStream(
-        '/api/gerar-tarefas',
-        { contexto, nivel, tarefas: tarefasSelecionadas },
-        (ev) => {
-          if (ev.type === 'progress') setProgresso(ev.progress)
-          else if (ev.type === 'error') setError(ev.erro)
-        }
-      )
+      const payload = await postJson('/api/gerar-tarefas', {
+        contexto,
+        nivel,
+        tarefas: tarefasSelecionadas,
+      })
+      setProgresso(100)
       setResultados(payload || null)
       setModo('exibir')
     } catch (err: any) {
-      if (!error) setError(err.message || 'Erro inesperado.')
+      if (!error) setError(err.message || 'Erro inesperado ao gerar as tarefas.')
     } finally {
       setProgresso(0)
       setLoading(false)
@@ -103,18 +95,16 @@ export default function Home() {
 
   const refazerTarefa = async (tarefa: string) => {
     setStatus('gerando')
-    setProgresso(0)
+    setProgresso(30)
     setLoading(true)
     setError(null)
     try {
-      const payload = await postOllamaStream(
-        '/api/gerar-tarefa-unica',
-        { contexto, nivel, tarefa },
-        (ev) => {
-          if (ev.type === 'progress') setProgresso(ev.progress)
-          else if (ev.type === 'error') setError(ev.erro)
-        }
-      )
+      const payload = await postJson('/api/gerar-tarefa-unica', {
+        contexto,
+        nivel,
+        tarefa,
+      })
+      setProgresso(100)
       setResultados((prev: any) => ({
         ...prev,
         [tarefa]: payload?.[tarefa] || '',
