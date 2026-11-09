@@ -16,6 +16,11 @@ Na versão inicial, o Ollama recebia o texto e gerava tudo de uma vez (resumo, e
 
 Na versão atual, o fluxo é dividido: primeiro o Ollama "estuda" o texto e extrai o contexto, depois o usuário escolhe exatamente o que gerar e com qual nível de complexidade. O contexto é reutilizado para novas tarefas sem precisar colar o texto novamente.
 
+## Recursos adicionais
+
+- **Dark mode**: alterne entre tema claro e escuro no botão no canto superior direito. A preferência é salva no navegador.
+- **Exportar PDF**: na tela de resultados, clique em "Exportar PDF" para baixar todos os materiais gerados em um arquivo PDF.
+
 Tudo roda **localmente** com o Ollama. Nada é enviado para nuvem e nada é salvo em banco de dados.
 
 ## Pré-requisitos
@@ -84,6 +89,8 @@ components/
   ResultCard.tsx        # Card de resumo/explicação com botão refazer
   Quiz.tsx              # Quiz automático com botão refazer
   Flashcards.tsx        # Flashcards com botão gerar mais
+  DarkModeToggle.tsx    # Alternar tema claro/escuro
+  ExportPdfButton.tsx   # Exportar materiais para PDF
 .env.example            # Exemplo de variáveis de ambiente
 .gitignore              # Arquivos ignorados pelo Git
 package.json            # Dependências do Node.js
