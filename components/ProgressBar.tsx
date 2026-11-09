@@ -5,8 +5,8 @@ interface ProgressBarProps {
 }
 
 const labels: Record<string, string> = {
-  estudando: 'Estudando o conteúdo com o Ollama...',
-  gerando: 'Gerando seus materiais com o Ollama...',
+  estudando: 'Estudando o conteúdo com a IA...',
+  gerando: 'Gerando seus materiais com a IA...',
 }
 
 export default function ProgressBar({ progress, status, label }: ProgressBarProps) {

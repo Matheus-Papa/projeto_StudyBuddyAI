@@ -57,9 +57,10 @@ export async function ollamaStream(
           if (parsed.response) {
             fullText += parsed.response
             chunks++
-            // Progresso real baseado nos chunks recebidos: sobe rápido no início
-            // e desacelera próximo do fim, chegando a 92% antes do done.
-            const progress = Math.min(92, 35 + chunks * 4)
+            // Progresso real baseado nos chunks recebidos: começa baixo (~5%)
+            // e sobe gradualmente até 90% antes do done. Assim não fica
+            // travado em um valor alto quando o Ollama envia poucos chunks.
+            const progress = Math.min(90, 5 + chunks * 4)
             onEvent({ type: 'progress', progress })
           }
           if (parsed.done) {
