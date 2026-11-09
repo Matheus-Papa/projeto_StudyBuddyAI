@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { handleOllamaStream } from '@/lib/ollama-server'
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'phi3'
@@ -23,66 +24,52 @@ export async function POST(req: Request) {
     const { texto, nivel } = await req.json()
 
     if (!texto || typeof texto !== 'string' || texto.trim().length < 10) {
-      return NextResponse.json(
-        { erro: 'Texto muito curto. Cole um conteúdo com pelo menos 10 caracteres.' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ erro: 'Texto muito curto. Cole um conteúdo com pelo menos 10 caracteres.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
     const prompt = PROMPT_TEMPLATE(texto, nivel)
 
-    const ollamaRes = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        prompt,
-        stream: false,
-        format: 'json',
-      }),
-    })
-
-    if (!ollamaRes.ok) {
-      return NextResponse.json(
-        { erro: 'Ollama não respondeu. Verifique se ele está rodando em localhost:11434.' },
-        { status: 502 }
-      )
-    }
-
-    const ollamaData = await ollamaRes.json()
-    const rawResponse = ollamaData.response || ''
-
-    let parsed: any = {}
-    try {
-      parsed = JSON.parse(rawResponse)
-    } catch {
-      const match = rawResponse.match(/\{[\s\S]*\}/)
-      if (match) {
+    return handleOllamaStream(req, {
+      prompt,
+      format: 'json',
+      onResult: (fullText) => {
+        const rawResponse = fullText || ''
+        let parsed: any = {}
         try {
-          parsed = JSON.parse(match[0])
+          parsed = JSON.parse(rawResponse)
         } catch {
-          parsed = {
-            resumo: rawResponse,
-            explicacao: '',
-            quiz: [],
-            flashcards: [],
+          const match = rawResponse.match(/\{[\s\S]*\}/)
+          if (match) {
+            try {
+              parsed = JSON.parse(match[0])
+            } catch {
+              parsed = {
+                resumo: rawResponse,
+                explicacao: '',
+                quiz: [],
+                flashcards: [],
+              }
+            }
+          } else {
+            parsed = {
+              resumo: rawResponse,
+              explicacao: '',
+              quiz: [],
+              flashcards: [],
+            }
           }
         }
-      } else {
-        parsed = {
-          resumo: rawResponse,
-          explicacao: '',
-          quiz: [],
-          flashcards: [],
-        }
-      }
-    }
 
-    return NextResponse.json({
-      resumo: parsed.resumo || 'Resumo não gerado.',
-      explicacao: parsed.explicacao || 'Explicação não gerada.',
-      quiz: Array.isArray(parsed.quiz) ? parsed.quiz : [],
-      flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
+        return {
+          resumo: parsed.resumo || 'Resumo não gerado.',
+          explicacao: parsed.explicacao || 'Explicação não gerada.',
+          quiz: Array.isArray(parsed.quiz) ? parsed.quiz : [],
+          flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
+        }
+      },
     })
   } catch (err: any) {
     return NextResponse.json(

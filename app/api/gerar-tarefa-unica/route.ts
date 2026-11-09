@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { handleOllamaStream } from '@/lib/ollama-server'
 
 export const maxDuration = 300
 
@@ -10,9 +11,9 @@ export async function POST(req: Request) {
     const { contexto, nivel, tarefa } = await req.json()
 
     if (!contexto || !nivel || !tarefa) {
-      return NextResponse.json(
-        { erro: 'Contexto, nível e tarefa são obrigatórios.' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ erro: 'Contexto, nível e tarefa são obrigatórios.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
@@ -25,35 +26,20 @@ export async function POST(req: Request) {
 
     const prompt = prompts[tarefa] || prompts.resumo
 
-    const ollamaRes = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        prompt,
-        stream: false,
-        format: 'json',
-      }),
+    return handleOllamaStream(req, {
+      prompt,
+      format: 'json',
+      onResult: (fullText) => {
+        const raw = fullText || ''
+        let resultado: any = ''
+        try {
+          resultado = JSON.parse(raw)
+        } catch {
+          resultado = raw
+        }
+        return { [tarefa]: resultado }
+      },
     })
-
-    if (!ollamaRes.ok) {
-      return NextResponse.json(
-        { erro: 'Ollama não respondeu.' },
-        { status: 502 }
-      )
-    }
-
-    const data = await ollamaRes.json()
-    const raw = data.response || ''
-
-    let resultado: any = ''
-    try {
-      resultado = JSON.parse(raw)
-    } catch {
-      resultado = raw
-    }
-
-    return NextResponse.json({ [tarefa]: resultado })
   } catch (err: any) {
     return NextResponse.json(
       { erro: err.message || 'Erro ao refazer tarefa.' },

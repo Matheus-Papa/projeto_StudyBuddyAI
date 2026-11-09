@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { handleOllamaStream } from '@/lib/ollama-server'
 
 export const maxDuration = 300
 
@@ -10,9 +11,9 @@ export async function POST(req: Request) {
     const { contexto, nivel, tarefas } = await req.json()
 
     if (!contexto || !nivel || !Array.isArray(tarefas) || tarefas.length === 0) {
-      return NextResponse.json(
-        { erro: 'Contexto, nível e tarefas são obrigatórios.' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ erro: 'Contexto, nível e tarefas são obrigatórios.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
@@ -39,48 +40,34 @@ ${chavesSolicitadas}
 Responda APENAS com o JSON válido. Não use markdown, não adicione texto antes ou depois.
 `
 
-    const ollamaRes = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        prompt,
-        stream: false,
-        format: 'json',
-      }),
-    })
-
-    if (!ollamaRes.ok) {
-      return NextResponse.json(
-        { erro: 'Ollama não respondeu. Verifique se está rodando em localhost:11434.' },
-        { status: 502 }
-      )
-    }
-
-    const ollamaData = await ollamaRes.json()
-    const rawResponse = ollamaData.response || ''
-
-    let parsed: any = {}
-    try {
-      parsed = JSON.parse(rawResponse)
-    } catch {
-      const match = rawResponse.match(/\{[\s\S]*\}/)
-      if (match) {
+    return handleOllamaStream(req, {
+      prompt,
+      format: 'json',
+      onResult: (fullText) => {
+        const rawResponse = fullText || ''
+        let parsed: any = {}
         try {
-          parsed = JSON.parse(match[0])
+          parsed = JSON.parse(rawResponse)
         } catch {
-          parsed = {}
+          const match = rawResponse.match(/\{[\s\S]*\}/)
+          if (match) {
+            try {
+              parsed = JSON.parse(match[0])
+            } catch {
+              parsed = {}
+            }
+          }
         }
-      }
-    }
 
-    const resultado: any = {}
-    if (tarefas.includes('resumo')) resultado.resumo = parsed.resumo || 'Resumo não gerado.'
-    if (tarefas.includes('explicacao')) resultado.explicacao = parsed.explicacao || 'Explicação não gerada.'
-    if (tarefas.includes('quiz')) resultado.quiz = Array.isArray(parsed.quiz) ? parsed.quiz : []
-    if (tarefas.includes('flashcards')) resultado.flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards : []
+        const resultado: any = {}
+        if (tarefas.includes('resumo')) resultado.resumo = parsed.resumo || 'Resumo não gerado.'
+        if (tarefas.includes('explicacao')) resultado.explicacao = parsed.explicacao || 'Explicação não gerada.'
+        if (tarefas.includes('quiz')) resultado.quiz = Array.isArray(parsed.quiz) ? parsed.quiz : []
+        if (tarefas.includes('flashcards')) resultado.flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards : []
 
-    return NextResponse.json(resultado)
+        return resultado
+      },
+    })
   } catch (err: any) {
     return NextResponse.json(
       { erro: err.message || 'Erro interno ao gerar tarefas.' },

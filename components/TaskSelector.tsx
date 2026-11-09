@@ -14,7 +14,7 @@ interface TaskSelectorProps {
   niveis: NivelOption[]
   tarefas: TarefaOption[]
   selecionadas: string[]
-  setSelecionadas: (v: string[]) => void
+  setSelecionadas: (v: string[] | ((prev: string[]) => string[])) => void
   loading: boolean
   onGerar: () => void
   error: string | null

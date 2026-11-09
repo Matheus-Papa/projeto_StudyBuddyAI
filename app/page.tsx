@@ -7,8 +7,11 @@ import ResultCard from '@/components/ResultCard'
 import Quiz from '@/components/Quiz'
 import Flashcards from '@/components/Flashcards'
 import ExportPdfButton from '@/components/ExportPdfButton'
+import ProgressBar from '@/components/ProgressBar'
+import { postOllamaStream } from '@/lib/ollama-client'
 
 type Modo = 'estudar' | 'selecionar' | 'exibir'
+type Status = 'idle' | 'estudando' | 'gerando'
 
 export default function Home() {
   const [modo, setModo] = useState<Modo>('estudar')
@@ -18,6 +21,8 @@ export default function Home() {
   const [tarefasSelecionadas, setTarefasSelecionadas] = useState<string[]>([])
   const [resultados, setResultados] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [progresso, setProgresso] = useState(0)
+  const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
   const resultadosRef = useRef<HTMLDivElement>(null)
 
@@ -41,25 +46,29 @@ export default function Home() {
       setError('Cole um texto antes de estudar.')
       return
     }
+    setStatus('estudando')
+    setProgresso(0)
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/estudar-contexto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.erro || 'Erro ao estudar contexto')
+      const payload = await postOllamaStream(
+        '/api/estudar-contexto',
+        { texto },
+        (ev) => {
+          if (ev.type === 'progress') setProgresso(ev.progress)
+          else if (ev.type === 'error') setError(ev.erro)
+        }
+      )
+      if (payload?.contexto) {
+        setContexto(payload.contexto)
+        setModo('selecionar')
       }
-      const data = await res.json()
-      setContexto(data.contexto || '')
-      setModo('selecionar')
     } catch (err: any) {
-      setError(err.message || 'Erro inesperado. Verifique se o Ollama está rodando.')
+      if (!error) setError(err.message || 'Erro inesperado. Verifique se o Ollama está rodando.')
     } finally {
+      setProgresso(0)
       setLoading(false)
+      setStatus('idle')
     }
   }
 
@@ -68,50 +77,54 @@ export default function Home() {
       setError('Selecione ao menos uma tarefa.')
       return
     }
+    setStatus('gerando')
+    setProgresso(0)
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/gerar-tarefas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contexto, nivel, tarefas: tarefasSelecionadas }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.erro || 'Erro ao gerar materiais')
-      }
-      const data = await res.json()
-      setResultados(data)
+      const payload = await postOllamaStream(
+        '/api/gerar-tarefas',
+        { contexto, nivel, tarefas: tarefasSelecionadas },
+        (ev) => {
+          if (ev.type === 'progress') setProgresso(ev.progress)
+          else if (ev.type === 'error') setError(ev.erro)
+        }
+      )
+      setResultados(payload || null)
       setModo('exibir')
     } catch (err: any) {
-      setError(err.message || 'Erro inesperado.')
+      if (!error) setError(err.message || 'Erro inesperado.')
     } finally {
+      setProgresso(0)
       setLoading(false)
+      setStatus('idle')
     }
   }
 
   const refazerTarefa = async (tarefa: string) => {
+    setStatus('gerando')
+    setProgresso(0)
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/gerar-tarefa-unica', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contexto, nivel, tarefa }),
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.erro || 'Erro ao refazer tarefa')
-      }
-      const data = await res.json()
+      const payload = await postOllamaStream(
+        '/api/gerar-tarefa-unica',
+        { contexto, nivel, tarefa },
+        (ev) => {
+          if (ev.type === 'progress') setProgresso(ev.progress)
+          else if (ev.type === 'error') setError(ev.erro)
+        }
+      )
       setResultados((prev: any) => ({
         ...prev,
-        [tarefa]: data[tarefa] || data.resultado || '',
+        [tarefa]: payload?.[tarefa] || '',
       }))
     } catch (err: any) {
-      setError(err.message || 'Erro ao refazer.')
+      if (!error) setError(err.message || 'Erro ao refazer.')
     } finally {
+      setProgresso(0)
       setLoading(false)
+      setStatus('idle')
     }
   }
 
@@ -126,6 +139,8 @@ export default function Home() {
       <p className="subtitle">
         Estude o texto primeiro, depois escolha o que gerar. Tudo local com Ollama.
       </p>
+
+      <ProgressBar progress={progresso} status={status} />
 
       {modo === 'estudar' && (
         <StudyForm

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { handleOllamaStream } from '@/lib/ollama-server'
 
 export const maxDuration = 300
 
@@ -10,9 +11,9 @@ export async function POST(req: Request) {
     const { texto } = await req.json()
 
     if (!texto || typeof texto !== 'string' || texto.trim().length < 10) {
-      return NextResponse.json(
-        { erro: 'Texto muito curto. Cole um conteúdo com pelo menos 10 caracteres.' },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ erro: 'Texto muito curto. Cole um conteúdo com pelo menos 10 caracteres.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
@@ -30,27 +31,11 @@ ${texto}
 Responda em português do Brasil, de forma direta e objetiva.
 `
 
-    const ollamaRes = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: OLLAMA_MODEL,
-        prompt,
-        stream: false,
+    return handleOllamaStream(req, {
+      prompt,
+      onResult: (fullText) => ({
+        contexto: fullText || 'Não foi possível extrair o contexto.',
       }),
-    })
-
-    if (!ollamaRes.ok) {
-      return NextResponse.json(
-        { erro: 'Ollama não respondeu. Verifique se está rodando em localhost:11434.' },
-        { status: 502 }
-      )
-    }
-
-    const data = await ollamaRes.json()
-
-    return NextResponse.json({
-      contexto: data.response || 'Não foi possível extrair o contexto.',
     })
   } catch (err: any) {
     return NextResponse.json(
