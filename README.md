@@ -26,7 +26,7 @@ Antes de rodar o projeto, você precisa ter instalado no seu computador:
 
 1. **Node.js** (v18 ou superior) — [nodejs.org](https://nodejs.org/)
 
-Você também precisa de uma chave de API da NVIDIA (NIM).
+Você também precisa de uma chave de API da NVIDIA (NIM). Gere a sua própria chave em [build.nvidia.com/deepseek-ai/deepseek-v4.1-flash](https://build.nvidia.com/deepseek-ai/deepseek-v4.1-flash) e insira na variável `NVIDIA_API_KEY` do `.env.local`.
 
 ## Como rodar localmente
 
