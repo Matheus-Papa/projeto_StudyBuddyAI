@@ -47,12 +47,6 @@ npm run dev
 
 Abra `http://localhost:3000` no navegador.
 
-## Segurança
-
-- Não há chave de API exposta no front-end. Toda comunicação com a NVIDIA acontece nas rotas de API do Next.js (`/api/estudar-contexto`, `/api/gerar-tarefas`, `/api/gerar-tarefa-unica`), nunca direto do navegador.
-- Não suba o arquivo `.env.local` para o GitHub (já está no `.gitignore`).
-- Não commite as pastas `.next/` nem `node_modules/` (já estão no `.gitignore`).
-
 ## Limitações
 
 - Requer uma chave de API válida da NVIDIA para funcionar.
